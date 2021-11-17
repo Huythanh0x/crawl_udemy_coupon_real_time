@@ -254,24 +254,6 @@ def get_course_coupon(url):
 
 #####################################################
 
-def course_landing_api(courseid):
-    r = s.get(
-        "https://www.udemy.com/api-2.0/course-landing-components/"
-        + courseid
-        + "/me/?components=purchase"
-    ).json()
-    try:
-        purchased = r["purchase"]["data"]["purchase_date"]
-    except:
-        purchased = False
-    try:
-        amount = r["purchase"]["data"]["list_price"]["amount"]
-    except:
-        print(r["purchase"]["data"])
-
-    return  purchased, Decimal(amount)
-
-
 def main():
     try:
         links_ls = []
@@ -338,7 +320,7 @@ def coupon_status(course_id,coupon_code):
     r = requests.get(url_check_status_coupons, allow_redirects=False)
     # print(url_check_status_coupons)
     if r.status_code in (404, 302, 301):
-        return False 
+        return 0,None,None,None,None,None 
     content_html = r.content.decode("utf-8")
     if "Not found" in content_html:
         print(f"NOT FOUND {url_check_status_coupons}")
@@ -405,23 +387,6 @@ def get_data_course(content_html):
     description = my_json['description']
     level = my_json['instructional_level']
     return category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description
-def execute_link(coupon_link):
-    global list_object
-    _,coupon_code = coupon_link.split('/?couponCode=')
-    coupon_link = coupon_link.replace('\n','')
-    coupon_code = coupon_code.replace('\n','')
-    course_id = get_course_id(coupon_link)
-
-    price,price_string,preview_img,preview_video,duration,end_day = coupon_status(course_id,coupon_code)
-    category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,_,language,headline,description = course_status(course_id)
-    if int(price) == 0 and end_day != 0:
-        coupon_object = {'course_id':f"{course_id}",'category': f"{category}",'sub_category':f"{sub_category}",'title':f"{course_title}",'level':f"{level}",'author':f"{author}",'duration':f"{duration}",'rating':f"{rating}",'reviews':f"{number_reviews}",'students':f"{students}",'coupon_code':f"{coupon_code}",'preview_img':f"{preview_img}",'coupon_link':f"{coupon_link}",'end_day':f"{end_day}",'headline':f"{headline}",'description':f"{description}",'preview_video':f"{preview_video}"}
-        list_object.append(coupon_object)
-    else:
-        with open("error.log",'a') as f:
-            f.writelines(f"{coupon_link}\n")
-
-
 
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 try:
