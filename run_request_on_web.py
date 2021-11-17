@@ -10,16 +10,21 @@ import requests
 from tqdm import tqdm
 from functools import partial
 import os
+from time import sleep
+import time
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+import bs4
 
-for i in ["requests", "bs4", "html5lib", "tqdm"]:
-    print("installing", i)
-    os.system(f"pip3 install {i} -U")
+# for i in ["requests", "bs4", "html5lib", "tqdm"]:
+#     print("installing", i)
+#     os.system(f"pip3 install {i} -U")
 
-PAGE_NTH = 6
+PAGE_NTH =2
 tqdm = partial(tqdm, position=0, leave=True)
 
 
-def discudemy():
+def discudemy(driver):
     global du_links
     du_links = []
     big_all = []
@@ -27,15 +32,13 @@ def discudemy():
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36 Edg/89.0.774.77",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
     }
-    proxyDict = {
-        'http': "add http proxy",
-        'https': "add https proxy"
-    }
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://www.discudemy.com/all/" +
-                         str(page), headers=head, proxies=proxyDict)
-        soup = bs(r.content, "html5lib")
+        url_web = "https://www.discudemy.com/all/" + str(page)
+        driver.get(url_web)
+        html = driver.page_source
+
+        soup = bs(html, "html5lib")
         all = soup.find_all("section", "card")
         big_all.extend(all)
     du_bar = tqdm(total=len(big_all), desc="Discudemy")
@@ -44,7 +47,6 @@ def discudemy():
         try:
             title = items.a.text
             url = items.a["href"]
-
             r = requests.get(url, headers=head)
             soup = bs(r.content, "html5lib")
             next = soup.find("div", "ui center aligned basic segment")
@@ -57,4 +59,8 @@ def discudemy():
     du_bar.close()
 
 
-discudemy()
+op = webdriver.ChromeOptions()
+op.add_argument('headless')
+
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
+discudemy(driver)
