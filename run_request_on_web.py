@@ -65,5 +65,5 @@ def discudemy(driver):
 op = webdriver.ChromeOptions()
 op.add_argument('headless')
 
-driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
+driver = webdriver.Chrome(ChromeDriverManager(version="96.0.4664.45").install(), options=op)
 discudemy(driver)
