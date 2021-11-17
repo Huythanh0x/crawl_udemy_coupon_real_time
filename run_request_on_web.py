@@ -2,6 +2,7 @@ import os
 for i in ["requests", "bs4", "html5lib", "tqdm","webdriver-manager"]:
     print("installing", i)
     os.system(f"pip3 install {i} -U")
+os.system(f"install --user selenium==3.141.0")
     
 from decimal import Decimal
 from urllib.parse import parse_qs, unquote, urlsplit
@@ -63,10 +64,11 @@ def discudemy(driver):
 
 
 op = webdriver.ChromeOptions()
-op.add_argument('headless')
+# op.add_argument('headless')
 op.add_argument('--ignore-certificate-errors')
 op.add_argument('--no-sandbox')
 op.add_argument('--disable-dev-shm-usage')
+op.add_argument("--disable-gpu")
 
 driver = webdriver.Chrome(ChromeDriverManager(version="90.0.4430.24").install(), options=op)    
 discudemy(driver)
