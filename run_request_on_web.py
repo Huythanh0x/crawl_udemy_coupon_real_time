@@ -63,7 +63,10 @@ def discudemy(driver):
 
 
 op = webdriver.ChromeOptions()
-# op.add_argument('headless')
+op.add_argument('headless')
+op.add_argument('--headless')
+op.add_argument('--no-sandbox')
+op.add_argument('--disable-dev-shm-usage')
 
 driver = webdriver.Chrome(ChromeDriverManager(version="90.0.4430.24").install(), options=op)    
 discudemy(driver)
