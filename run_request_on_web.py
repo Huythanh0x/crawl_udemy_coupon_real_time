@@ -1,9 +1,4 @@
 import os
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-
-os.system(f"pip3 install webdriver-manager -U")
-
 for i in ["requests", "bs4", "html5lib", "tqdm","webdriver-manager"]:
     print("installing", i)
     os.system(f"pip3 install {i} -U")
@@ -68,7 +63,7 @@ def discudemy(driver):
 
 
 op = webdriver.ChromeOptions()
-op.add_argument('headless')
+# op.add_argument('headless')
 
 driver = webdriver.Chrome(ChromeDriverManager(version="90.0.4430.24").install(), options=op)    
 discudemy(driver)
