@@ -16,9 +16,9 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 import bs4
 
-# for i in ["requests", "bs4", "html5lib", "tqdm"]:
-#     print("installing", i)
-#     os.system(f"pip3 install {i} -U")
+for i in ["requests", "bs4", "html5lib", "tqdm","webdriver-manager"]:
+    print("installing", i)
+    os.system(f"pip3 install {i} -U")
 
 PAGE_NTH =2
 tqdm = partial(tqdm, position=0, leave=True)
