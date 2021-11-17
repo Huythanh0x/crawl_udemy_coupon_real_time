@@ -69,4 +69,4 @@ os.system(f"pip3 install webdriver-manager -U")
 op = webdriver.ChromeOptions()
 op.add_argument('headless')
 
-driver = webdriver.Chrome(ChromeDriverManager(version="90.0.4430.212").install(), options=op)    
+driver = webdriver.Chrome(ChromeDriverManager(version="90.0.4430.24").install(), options=op)    

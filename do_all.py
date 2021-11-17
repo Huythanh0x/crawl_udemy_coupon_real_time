@@ -406,6 +406,7 @@ def get_data_course(content_html):
     level = my_json['instructional_level']
     return category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description
 def execute_link(coupon_link):
+    global list_object
     _,coupon_code = coupon_link.split('/?couponCode=')
     coupon_link = coupon_link.replace('\n','')
     coupon_code = coupon_code.replace('\n','')
