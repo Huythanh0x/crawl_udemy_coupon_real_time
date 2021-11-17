@@ -1,36 +1,40 @@
+from decimal import Decimal
+from urllib.parse import parse_qs, unquote, urlsplit
+from datetime import datetime
+import traceback
+import time
+import threading
+import json
+from bs4 import BeautifulSoup as bs
+import requests
+from tqdm import tqdm
+from functools import partial
 import os
 
-for i in ["requests","bs4","html5lib","tqdm"]:
-    print("installing",i)
+for i in ["requests", "bs4", "html5lib", "tqdm"]:
+    print("installing", i)
     os.system(f"pip3 install {i} -U")
-from functools import partial
-from tqdm import tqdm
-import requests
-from bs4 import BeautifulSoup as bs
-import json
-import threading
-import time
-import traceback
-import os
-from datetime import datetime
-from urllib.parse import parse_qs, unquote, urlsplit
-from decimal import Decimal
-from bs4 import BeautifulSoup as bs
 
 PAGE_NTH = 6
 tqdm = partial(tqdm, position=0, leave=True)
+
 
 def discudemy():
     global du_links
     du_links = []
     big_all = []
     head = {
-    "Accept-Language" : "en-US,en;q=0.5",
-    "User-Agent": "Defined",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36 Edg/89.0.774.77",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    }
+    proxyDict = {
+        'http': "add http proxy",
+        'https': "add https proxy"
     }
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://www.discudemy.com/all/" + str(page), headers=head)
+        r = requests.get("https://www.discudemy.com/all/" +
+                         str(page), headers=head, proxies=proxyDict)
         soup = bs(r.content, "html5lib")
         all = soup.find_all("section", "card")
         big_all.extend(all)
@@ -51,5 +55,6 @@ def discudemy():
         except AttributeError:
             continue
     du_bar.close()
+
 
 discudemy()
