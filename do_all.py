@@ -12,6 +12,11 @@ from decimal import Decimal
 from datetime import datetime
 from bs4 import BeautifulSoup as bs
 
+import os
+for i in ["requests","bs4","html5lib","colorama","tqdm"]:
+    print("installing",i)
+    os.system(f"pip3 install {i} -U")
+
 PAGE_NTH = 6
 tqdm = partial(tqdm, position=0, leave=True)
 ###############################################################################
