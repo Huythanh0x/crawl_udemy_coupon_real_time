@@ -19,7 +19,6 @@ from decimal import Decimal
 
 from bs4 import BeautifulSoup as bs
 
-PAGE_NTH = 2
 tqdm = partial(tqdm, position=0, leave=True)
   ###############################################################################
 
@@ -431,6 +430,8 @@ try:
     os.remove("final_api.json")
 except:
     pass
+
+PAGE_NTH = 6
 all_functions = create_scrape_obj()
 tm = threading.Thread(target=main, daemon=True)
 tm.start()
