@@ -108,9 +108,12 @@ def get_data_course(content_html):
     level = my_json['instructional_level']
     return category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description
 
-
-os.remove("final_api.csv")
-os.remove("final_api.json")
+try:
+    os.remove("final_api.csv")
+    os.remove("final_api.json")
+    os.remove("error.log")
+except:
+    pass
 
 with open('coupon_link.txt','r') as f:
     all_link = f.readlines()
@@ -131,7 +134,6 @@ for coupon_link in all_link:
             f.writelines(f"{course_id},{category},{sub_category},{course_title},{level},{author},{duration},{rating},{rating},{number_reviews},{students},{coupon_code},{preview_img},{coupon_link},{end_day},{headline},{description},{preview_video}\n")
         coupon_object = {'course_id':f"{course_id}",'category': f"{category}",'sub_category':f"{sub_category}",'title':f"{course_title}",'level':f"{level}",'author':f"{author}",'duration':f"{duration}",'rating':f"{rating}",'reviews':f"{number_reviews}",'students':f"{students}",'coupon_code':f"{coupon_code}",'preview_img':f"{preview_img}",'coupon_link':f"{coupon_link}",'end_day':f"{end_day}",'headline':f"{headline}",'description':f"{description}",'preview_video':f"{preview_video}"}
         list_object.append(coupon_object)
-
 
     else:
         with open("error.log",'a') as f:
