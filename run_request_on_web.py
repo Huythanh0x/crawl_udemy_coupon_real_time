@@ -1,3 +1,4 @@
+import os
 
 for i in ["requests", "bs4", "html5lib", "tqdm","webdriver-manager"]:
     print("installing", i)
