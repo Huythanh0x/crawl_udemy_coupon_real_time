@@ -242,7 +242,6 @@ def get_course_id(url):
         # f.write(str(soup))
     return courseid
 
-
 def get_course_coupon(url):
     query = urlsplit(url).query
     params = parse_qs(query)
@@ -293,27 +292,6 @@ def write_all_coupon_links(links_ls):
         f.writelines(links_ls_to_write)
 
 
-def get_course_id(url):
-    r = requests.get(url, allow_redirects=False)
-    if r.status_code in (404, 302, 301):
-        return False
-    if "/course/draft/" in url:
-        return False
-    soup = bs(r.content, "html5lib")
-
-    try:
-        courseid = soup.find(
-            "div",
-            attrs={"data-content-group": "Landing Page"},
-        )["data-course-id"]
-    except:
-        courseid = soup.find(
-            "body", attrs={"data-module-id": "course-landing-page/udlite"}
-        )["data-clp-course-id"]
-        # with open("problem.txt","w",encoding="utf-8") as f:
-        # f.write(str(soup))
-    return courseid
-
 
 def coupon_status(course_id,coupon_code):
     url_check_status_coupons = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?couponCode={coupon_code}&components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons"
@@ -362,7 +340,7 @@ def course_status(course_id):
     r = requests.get(url_check_course_status, allow_redirects=False)
     print(url_check_course_status)
     if r.status_code in (404, 302, 301):
-        return False
+        return None,None,None,None,None,0,None,None,None,None,None,None,None
     content_html = r.content.decode("utf-8") 
     category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description = get_data_course(content_html)
     return category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description
@@ -415,7 +393,7 @@ for coupon_link in all_link:
 
     price,price_string,preview_img,preview_video,duration,end_day = coupon_status(course_id,coupon_code)
     category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,_,language,headline,description = course_status(course_id)
-    if int(price) == 0 and end_day != 0:
+    if int(price) == 0 and end_day != 0 and content_length != 0:
         coupon_object = {'course_id':f"{course_id}",'category': f"{category}",'sub_category':f"{sub_category}",'title':f"{course_title}",'level':f"{level}",'author':f"{author}",'duration':f"{duration}",'rating':f"{rating}",'reviews':f"{number_reviews}",'students':f"{students}",'coupon_code':f"{coupon_code}",'preview_img':f"{preview_img}",'coupon_link':f"{coupon_link}",'end_day':f"{end_day}",'headline':f"{headline}",'description':f"{description}",'preview_video':f"{preview_video}"}
         list_object.append(coupon_object)
     else:
