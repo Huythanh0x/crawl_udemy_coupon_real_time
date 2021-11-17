@@ -1,3 +1,8 @@
+import os
+
+for i in ["requests","bs4","html5lib","tqdm"]:
+    print("installing",i)
+    os.system(f"pip3 install {i} -U")
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -7,25 +12,15 @@ import threading
 import time
 import traceback
 import os
+from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
 from decimal import Decimal
-from datetime import datetime
-from bs4 import BeautifulSoup as bs
 
-import os
-for i in ["requests","bs4","html5lib","colorama","tqdm"]:
-    print("installing",i)
-    os.system(f"pip3 install {i} -U")
+from bs4 import BeautifulSoup as bs
 
 PAGE_NTH = 6
 tqdm = partial(tqdm, position=0, leave=True)
-
-proxyDict = { 
-          'http'  : "add http proxy", 
-          'https' : "add https proxy"
-        }
-
-###############################################################################
+  ###############################################################################
 
 def discudemy():
     global du_links
@@ -37,7 +32,7 @@ def discudemy():
     }
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://www.discudemy.com/all/" + str(page), headers=head,proxies=proxyDict)
+        r = requests.get("https://www.discudemy.com/all/" + str(page), headers=head)
         soup = bs(r.content, "html5lib")
         all = soup.find_all("section", "card")
         big_all.extend(all)
@@ -48,11 +43,11 @@ def discudemy():
             title = items.a.text
             url = items.a["href"]
 
-            r = requests.get(url, headers=head,proxies=proxyDict)
+            r = requests.get(url, headers=head)
             soup = bs(r.content, "html5lib")
             next = soup.find("div", "ui center aligned basic segment")
             url = next.a["href"]
-            r = requests.get(url, headers=head,proxies=proxyDict)
+            r = requests.get(url, headers=head)
             soup = bs(r.content, "html5lib")
             du_links.append(soup.find("div", "ui segment").a["href"])
         except AttributeError:
@@ -67,7 +62,7 @@ def udemy_freebies():
 
     for page in range(1, PAGE_NTH):
         r = requests.get(
-            "https://www.udemyfreebies.com/free-udemy-courses/" + str(page),proxies=proxyDict
+            "https://www.udemyfreebies.com/free-udemy-courses/" + str(page)
         )
         soup = bs(r.content, "html5lib")
         all = soup.find_all("div", "coupon-name")
@@ -77,10 +72,10 @@ def udemy_freebies():
     for index, items in enumerate(big_all):
         uf_bar.update(1)
         title = items.a.text
-        url = bs(requests.get(items.a["href"],proxies=proxyDict).content, "html5lib").find(
+        url = bs(requests.get(items.a["href"]).content, "html5lib").find(
             "a", class_="button-icon"
         )["href"]
-        link = requests.get(url,proxies=proxyDict).url
+        link = requests.get(url).url
         uf_links.append(link)
     uf_bar.close()
 
@@ -92,7 +87,7 @@ def tutorialbar():
     big_all = []
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://www.tutorialbar.com/all-courses/page/" + str(page),proxies=proxyDict)
+        r = requests.get("https://www.tutorialbar.com/all-courses/page/" + str(page))
         soup = bs(r.content, "html5lib")
         all = soup.find_all(
             "div", class_="content_constructor pb0 pr20 pl20 mobilepadding"
@@ -105,7 +100,7 @@ def tutorialbar():
         title = items.a.text
         url = items.a["href"]
 
-        r = requests.get(url,proxies=proxyDict)
+        r = requests.get(url)
         soup = bs(r.content, "html5lib")
         link = soup.find("a", class_="btn_offer_block re_track_btn")["href"]
         if "www.udemy.com" in link:
@@ -120,7 +115,7 @@ def real_discount():
     big_all = []
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://app.real.discount/stores/Udemy?page=" + str(page),proxies=proxyDict)
+        r = requests.get("https://app.real.discount/stores/Udemy?page=" + str(page))
         soup = bs(r.content, "html5lib")
         all = soup.find_all("div", class_="col-xl-4 col-md-6")
         big_all.extend(all)
@@ -130,7 +125,7 @@ def real_discount():
         rd_bar.update(1)
         title = items.h3.text
         url = "https://app.real.discount" + items.a["href"]
-        r = requests.get(url,proxies=proxyDict)
+        r = requests.get(url)
         soup = bs(r.content, "html5lib")
         try:
             link = soup.select_one("a[href^='https://www.udemy.com']")["href"]
@@ -144,14 +139,14 @@ def coursevania():
 
     global cv_links
     cv_links = []
-    r = requests.get("https://coursevania.com/courses/",proxies=proxyDict)
+    r = requests.get("https://coursevania.com/courses/")
     soup = bs(r.content, "html5lib")
     nonce = soup.find_all("script")[22].text[30:]
     nonce = json.loads(nonce.strip().strip(";"))["load_content"]
     r = requests.get(
         "https://coursevania.com/wp-admin/admin-ajax.php?&template=courses/grid&args={%22posts_per_page%22:%2230%22}&action=stm_lms_load_content&nonce="
         + nonce
-        + "&sort=date_high",proxies=proxyDict
+        + "&sort=date_high"
     ).json()
     soup = bs(r["content"], "html5lib")
     all = soup.find_all("div", attrs={"class": "stm_lms_courses__single--title"})
@@ -160,7 +155,7 @@ def coursevania():
     for index, item in enumerate(all):
         cv_bar.update(1)
         title = item.h5.text
-        r = requests.get(item.a["href"],proxies=proxyDict)
+        r = requests.get(item.a["href"])
         soup = bs(r.content, "html5lib")
         cv_links.append(soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"])
     cv_bar.close()
@@ -174,7 +169,7 @@ def idcoupons():
     for page in range(1, PAGE_NTH):
         r = requests.get(
             "https://idownloadcoupon.com/product-category/udemy-2/page/" + str(page)
-        ,proxies=proxyDict)
+        )
         soup = bs(r.content, "html5lib")
         all = soup.find_all("a", attrs={"class": "button product_type_external"})
         big_all.extend(all)
@@ -194,7 +189,7 @@ def idcoupons():
 
 def enext() -> list:
     en_links = []
-    r = requests.get("https://e-next.in/e/udemycoupons.php",proxies=proxyDict)
+    r = requests.get("https://e-next.in/e/udemycoupons.php")
     soup = bs(r.content, "html.parser")
     big_all = soup.find_all("p", {"class": "p2"})
     big_all.pop(0)
@@ -227,7 +222,7 @@ def create_scrape_obj():
 ####################################################################
 
 def get_course_id(url):
-    r = requests.get(url, allow_redirects=False,proxies=proxyDict)
+    r = requests.get(url, allow_redirects=False)
     if r.status_code in (404, 302, 301):
         return False
     if "/course/draft/" in url:
@@ -317,7 +312,7 @@ def write_all_coupon_links(links_ls):
 
 
 def get_course_id(url):
-    r = requests.get(url, allow_redirects=False,proxies=proxyDict)
+    r = requests.get(url, allow_redirects=False)
     if r.status_code in (404, 302, 301):
         return False
     if "/course/draft/" in url:
@@ -340,7 +335,7 @@ def get_course_id(url):
 
 def coupon_status(course_id,coupon_code):
     url_check_status_coupons = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?couponCode={coupon_code}&components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons"
-    r = requests.get(url_check_status_coupons, allow_redirects=False,proxies=proxyDict)
+    r = requests.get(url_check_status_coupons, allow_redirects=False)
     # print(url_check_status_coupons)
     if r.status_code in (404, 302, 301):
         return False 
@@ -382,7 +377,7 @@ def get_data_coupon(content_html):
 def course_status(course_id):
     url_check_course_status = f"https://www.udemy.com/api-2.0/courses/{course_id}/?fields[course]=title,context_info,primary_category,primary_subcategory,avg_rating_recent,visible_instructors,locale,estimated_content_length,num_subscribers,num_reviews,description,headline,instructional_level"
     # url_check_course_status = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons,price_text,deal_badge,discount_expiration,redeem_coupon,gift_this_course,base_purchase_section,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context" 
-    r = requests.get(url_check_course_status, allow_redirects=False,proxies=proxyDict)
+    r = requests.get(url_check_course_status, allow_redirects=False)
     print(url_check_course_status)
     if r.status_code in (404, 302, 301):
         return False
@@ -412,15 +407,13 @@ def get_data_course(content_html):
     return category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description
 
 
-############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
-
+  ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 try:
     os.remove("coupon_link.txt")
     os.remove("final_api.csv")
     os.remove("final_api.json")
 except:
     pass
-
 all_functions = create_scrape_obj()
 tm = threading.Thread(target=main, daemon=True)
 tm.start()
@@ -450,6 +443,7 @@ for coupon_link in all_link:
     else:
         with open("error.log",'a') as f:
             f.writelines(f"{coupon_link}\n")
+
 
 last_time_update = datetime.now()
 
