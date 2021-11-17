@@ -64,7 +64,7 @@ def discudemy(driver):
 
 
 op = webdriver.ChromeOptions()
-# op.add_argument('headless')
+op.add_argument('headless')
 op.add_argument('--ignore-certificate-errors')
 op.add_argument('--no-sandbox')
 op.add_argument('--disable-dev-shm-usage')

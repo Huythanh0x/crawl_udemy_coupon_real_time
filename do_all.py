@@ -1,8 +1,8 @@
 import os
 
-for i in ["requests","bs4","html5lib","tqdm"]:
-    print("installing",i)
-    os.system(f"pip3 install {i} -U")
+# for i in ["requests","bs4","html5lib","tqdm"]:
+#     print("installing",i)
+#     os.system(f"pip3 install {i} -U")
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -18,7 +18,7 @@ from decimal import Decimal
 
 from bs4 import BeautifulSoup as bs
 
-PAGE_NTH = 6
+PAGE_NTH = 2
 tqdm = partial(tqdm, position=0, leave=True)
   ###############################################################################
 
@@ -49,7 +49,7 @@ def discudemy():
             url = next.a["href"]
             r = requests.get(url, headers=head)
             soup = bs(r.content, "html5lib")
-            du_links.append(soup.find("div", "ui segment").a["href"])
+            du_links.append(soup.find("div", "ui segment").a["href"].strip())
         except AttributeError:
             continue
     du_bar.close()
@@ -76,7 +76,7 @@ def udemy_freebies():
             "a", class_="button-icon"
         )["href"]
         link = requests.get(url).url
-        uf_links.append(link)
+        uf_links.append(link.strip())
     uf_bar.close()
 
 
@@ -104,7 +104,7 @@ def tutorialbar():
         soup = bs(r.content, "html5lib")
         link = soup.find("a", class_="btn_offer_block re_track_btn")["href"]
         if "www.udemy.com" in link:
-            tb_links.append(link)
+            tb_links.append(link.strip())
     tb_bar.close()
 
 
@@ -129,7 +129,7 @@ def real_discount():
         soup = bs(r.content, "html5lib")
         try:
             link = soup.select_one("a[href^='https://www.udemy.com']")["href"]
-            rd_links.append(link)
+            rd_links.append(link.strip())
         except:
             pass
     rd_bar.close()
@@ -157,7 +157,7 @@ def coursevania():
         title = item.h5.text
         r = requests.get(item.a["href"])
         soup = bs(r.content, "html5lib")
-        cv_links.append(soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"])
+        cv_links.append(soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"].strip())
     cv_bar.close()
 
 
@@ -184,7 +184,7 @@ def idcoupons():
         except IndexError:
             link = link[0]
         if link.startswith("https://www.udemy.com"):
-            idc_links.append(link)
+            idc_links.append(link.strip())
     idc_bar.close()
 
 def enext() -> list:
@@ -198,7 +198,7 @@ def enext() -> list:
         en_bar.update(1)
         try:
             link = i.a["href"]
-            en_links.append(link)
+            en_links.append(link.strip())
         except:
             pass
 
@@ -441,11 +441,20 @@ with open('coupon_link.txt','r') as f:
 list_object = []
 
 for coupon_link in all_link:
-    try:
-        execute_link(coupon_link)
-    except:
+    _,coupon_code = coupon_link.split('/?couponCode=')
+    coupon_link = coupon_link.replace('\n','')
+    coupon_code = coupon_code.replace('\n','')
+    course_id = get_course_id(coupon_link)
+
+    price,price_string,preview_img,preview_video,duration,end_day = coupon_status(course_id,coupon_code)
+    category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,_,language,headline,description = course_status(course_id)
+    if int(price) == 0 and end_day != 0:
+        coupon_object = {'course_id':f"{course_id}",'category': f"{category}",'sub_category':f"{sub_category}",'title':f"{course_title}",'level':f"{level}",'author':f"{author}",'duration':f"{duration}",'rating':f"{rating}",'reviews':f"{number_reviews}",'students':f"{students}",'coupon_code':f"{coupon_code}",'preview_img':f"{preview_img}",'coupon_link':f"{coupon_link}",'end_day':f"{end_day}",'headline':f"{headline}",'description':f"{description}",'preview_video':f"{preview_video}"}
+        list_object.append(coupon_object)
+    else:
         with open("error.log",'a') as f:
             f.writelines(f"{coupon_link}\n")
+
 
 last_time_update = datetime.now()
 
