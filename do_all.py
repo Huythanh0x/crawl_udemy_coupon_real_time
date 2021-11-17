@@ -1,8 +1,8 @@
 import os
 
-# for i in ["requests","bs4","html5lib","tqdm"]:
-#     print("installing",i)
-#     os.system(f"pip3 install {i} -U")
+for i in ["requests","bs4","html5lib","tqdm"]:
+    print("installing",i)
+    os.system(f"pip3 install {i} -U")
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -12,6 +12,7 @@ import threading
 import time
 import traceback
 import os
+import pytz
 from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
 from decimal import Decimal
@@ -456,9 +457,9 @@ for coupon_link in all_link:
             f.writelines(f"{coupon_link}\n")
 
 
-last_time_update = datetime.now()
-
-last_time_update = last_time_update.strftime("%Y:%m:%d %H:%M:%S")
+time_zone = pytz.timezone('Europe/Madrid')
+last_time_update = datetime.now(time_zone)
+last_time_update = last_time_update.strftime("%Y-%m-%d %H:%M:%S")
 
 list_json_result = {"last_time_update":last_time_update,"results":list_object}
 
