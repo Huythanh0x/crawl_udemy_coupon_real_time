@@ -1,8 +1,10 @@
 import os
 
-for i in ["requests","bs4","html5lib","tqdm"]:
-    print("installing",i)
-    os.system(f"pip3 install {i} -U")
+# for i in ["requests","bs4","html5lib","tqdm"]:
+#     print("installing",i)
+#     os.system(f"pip3 install {i} -U")
+
+
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -135,6 +137,13 @@ def real_discount():
     rd_bar.close()
 
 
+def teaching_guide():
+    global tg_links
+    my_json = requests.get("https://teachinguide.azure-api.net/course-coupon?sortCol=featured&sortDir=DESC&length=100&page=1&inkw=&discount=100&language=").json()
+    list_object_coupon = my_json['results']
+    tg_links = [coupon["CouponLink"] for coupon in list_object_coupon]
+
+
 def coursevania():
 
     global cv_links
@@ -204,6 +213,11 @@ def enext() -> list:
 
     en_bar.close()
 
+def teaching_guide():
+    global tg_links
+    my_json = requests.get("https://teachinguide.azure-api.net/course-coupon?sortCol=featured&sortDir=DESC&length=100&page=1&inkw=&discount=100&language=").json()
+    list_object_coupon = my_json['results']
+    tg_links = [coupon["CouponLink"] for coupon in list_object_coupon]
 
 
 def create_scrape_obj():
@@ -215,6 +229,7 @@ def create_scrape_obj():
         "Course Vania": threading.Thread(target=coursevania, daemon=True),
         "IDownloadCoupons": threading.Thread(target=idcoupons, daemon=True),
         "E-next": threading.Thread(target=enext, daemon=True),
+        "TeachinGuide":threading.Thread(target=teaching_guide,daemon=True),
     }
     return funcs
 
@@ -271,6 +286,7 @@ def main():
             "cv_links",
             "idc_links",
             "en_links",
+            "tg_links",
         ]:
             try:
                 links_ls += eval(link_list)
@@ -301,6 +317,8 @@ def coupon_status(course_id,coupon_code):
         return 0,None,None,None,None,None 
     content_html = r.content.decode("utf-8")
     if "Not found" in content_html:
+        with open('not_found.log','a') as f:
+            f.writelines(f"{url_check_status_coupons}\n")
         print(f"NOT FOUND {url_check_status_coupons}")
     price,price_string,preview_img,preview_video,duration,end_day = get_data_coupon(content_html)
     return price,price_string,preview_img,preview_video,duration,end_day
@@ -368,6 +386,7 @@ def get_data_course(content_html):
 
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 try:
+    os.remove("error.log")
     os.remove("coupon_link.txt")
     os.remove("final_api.csv")
     os.remove("final_api.json")
