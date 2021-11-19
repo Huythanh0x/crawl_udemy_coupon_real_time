@@ -22,7 +22,8 @@ from decimal import Decimal
 from bs4 import BeautifulSoup as bs
 
 tqdm = partial(tqdm, position=0, leave=True)
-  ###############################################################################
+###############################################################################
+
 
 def discudemy():
     global du_links
@@ -34,7 +35,8 @@ def discudemy():
     }
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://www.discudemy.com/all/" + str(page), headers=head)
+        r = requests.get("https://www.discudemy.com/all/" +
+                         str(page), headers=head)
         soup = bs(r.content, "html5lib")
         all = soup.find_all("section", "card")
         big_all.extend(all)
@@ -89,7 +91,8 @@ def tutorialbar():
     big_all = []
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://www.tutorialbar.com/all-courses/page/" + str(page))
+        r = requests.get(
+            "https://www.tutorialbar.com/all-courses/page/" + str(page))
         soup = bs(r.content, "html5lib")
         all = soup.find_all(
             "div", class_="content_constructor pb0 pr20 pl20 mobilepadding"
@@ -117,7 +120,8 @@ def real_discount():
     big_all = []
 
     for page in range(1, PAGE_NTH):
-        r = requests.get("https://app.real.discount/stores/Udemy?page=" + str(page))
+        r = requests.get(
+            "https://app.real.discount/stores/Udemy?page=" + str(page))
         soup = bs(r.content, "html5lib")
         all = soup.find_all("div", class_="col-xl-4 col-md-6")
         big_all.extend(all)
@@ -139,7 +143,8 @@ def real_discount():
 
 def teaching_guide():
     global tg_links
-    my_json = requests.get("https://teachinguide.azure-api.net/course-coupon?sortCol=featured&sortDir=DESC&length=100&page=1&inkw=&discount=100&language=").json()
+    my_json = requests.get(
+        "https://teachinguide.azure-api.net/course-coupon?sortCol=featured&sortDir=DESC&length=100&page=1&inkw=&discount=100&language=").json()
     list_object_coupon = my_json['results']
     tg_links = [coupon["CouponLink"] for coupon in list_object_coupon]
 
@@ -158,7 +163,8 @@ def coursevania():
         + "&sort=date_high"
     ).json()
     soup = bs(r["content"], "html5lib")
-    all = soup.find_all("div", attrs={"class": "stm_lms_courses__single--title"})
+    all = soup.find_all(
+        "div", attrs={"class": "stm_lms_courses__single--title"})
     cv_bar = tqdm(total=len(all), desc="Course Vania")
 
     for index, item in enumerate(all):
@@ -166,7 +172,8 @@ def coursevania():
         title = item.h5.text
         r = requests.get(item.a["href"])
         soup = bs(r.content, "html5lib")
-        cv_links.append(soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"].strip())
+        cv_links.append(
+            soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"].strip())
     cv_bar.close()
 
 
@@ -177,10 +184,12 @@ def idcoupons():
     big_all = []
     for page in range(1, PAGE_NTH):
         r = requests.get(
-            "https://idownloadcoupon.com/product-category/udemy-2/page/" + str(page)
+            "https://idownloadcoupon.com/product-category/udemy-2/page/" +
+            str(page)
         )
         soup = bs(r.content, "html5lib")
-        all = soup.find_all("a", attrs={"class": "button product_type_external"})
+        all = soup.find_all(
+            "a", attrs={"class": "button product_type_external"})
         big_all.extend(all)
     idc_bar = tqdm(total=len(big_all), desc="IDownloadCoupons")
 
@@ -195,6 +204,7 @@ def idcoupons():
         if link.startswith("https://www.udemy.com"):
             idc_links.append(link.strip())
     idc_bar.close()
+
 
 def enext() -> list:
     en_links = []
@@ -213,9 +223,11 @@ def enext() -> list:
 
     en_bar.close()
 
+
 def teaching_guide():
     global tg_links
-    my_json = requests.get("https://teachinguide.azure-api.net/course-coupon?sortCol=featured&sortDir=DESC&length=100&page=1&inkw=&discount=100&language=").json()
+    my_json = requests.get(
+        "https://teachinguide.azure-api.net/course-coupon?sortCol=featured&sortDir=DESC&length=100&page=1&inkw=&discount=100&language=").json()
     list_object_coupon = my_json['results']
     tg_links = [coupon["CouponLink"] for coupon in list_object_coupon]
 
@@ -229,7 +241,7 @@ def create_scrape_obj():
         "Course Vania": threading.Thread(target=coursevania, daemon=True),
         "IDownloadCoupons": threading.Thread(target=idcoupons, daemon=True),
         "E-next": threading.Thread(target=enext, daemon=True),
-        "TeachinGuide":threading.Thread(target=teaching_guide,daemon=True),
+        "TeachinGuide": threading.Thread(target=teaching_guide, daemon=True),
     }
     return funcs
 
@@ -257,6 +269,7 @@ def get_course_id(url):
         # f.write(str(soup))
     return courseid
 
+
 def get_course_coupon(url):
     query = urlsplit(url).query
     params = parse_qs(query)
@@ -267,6 +280,7 @@ def get_course_coupon(url):
         return ""
 
 #####################################################
+
 
 def main():
     try:
@@ -302,26 +316,28 @@ def main():
         e = traceback.format_exc()
         print(e)
 
+
 def write_all_coupon_links(links_ls):
     links_ls_to_write = "\n".join(links_ls)
-    with open('coupon_link.txt','w') as f:
+    with open('coupon_link.txt', 'w') as f:
         f.writelines(links_ls_to_write)
 
 
-
-def coupon_status(course_id,coupon_code):
+def coupon_status(course_id, coupon_code):
     url_check_status_coupons = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?couponCode={coupon_code}&components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons"
     r = requests.get(url_check_status_coupons, allow_redirects=False)
     # print(url_check_status_coupons)
     if r.status_code in (404, 302, 301):
-        return 0,None,None,None,None,None 
+        return 0, None, None, None, None, None
     content_html = r.content.decode("utf-8")
     if "Not found" in content_html:
-        with open('not_found.log','a') as f:
+        with open('not_found.log', 'a') as f:
             f.writelines(f"{url_check_status_coupons}\n")
         print(f"NOT FOUND {url_check_status_coupons}")
-    price,price_string,preview_img,preview_video,duration,end_day = get_data_coupon(content_html)
-    return price,price_string,preview_img,preview_video,duration,end_day
+    price, price_string, preview_img, preview_video, duration, end_day = get_data_coupon(
+        content_html)
+    return price, price_string, preview_img, preview_video, duration, end_day
+
 
 def get_data_coupon(content_html):
     # print("get status coupon")
@@ -333,7 +349,7 @@ def get_data_coupon(content_html):
     try:
         end_day = my_json['price_text']['data']['pricing_result']['campaign']['end_time']
     except:
-        end_day = 0
+        end_day = None
     try:
         price_string = my_json['price_text']['data']['pricing_result']['price']['price_string']
     except:
@@ -350,18 +366,21 @@ def get_data_coupon(content_html):
         duration = my_json['sidebar_container']['componentProps']['incentives']['video_content_length']
     except:
         duration = "null"
-    return price,price_string,preview_img,preview_video,duration,end_day
+    return price, price_string, preview_img, preview_video, duration, end_day
+
 
 def course_status(course_id):
     url_check_course_status = f"https://www.udemy.com/api-2.0/courses/{course_id}/?fields[course]=title,context_info,primary_category,primary_subcategory,avg_rating_recent,visible_instructors,locale,estimated_content_length,num_subscribers,num_reviews,description,headline,instructional_level"
-    # url_check_course_status = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons,price_text,deal_badge,discount_expiration,redeem_coupon,gift_this_course,base_purchase_section,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context" 
+    # url_check_course_status = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons,price_text,deal_badge,discount_expiration,redeem_coupon,gift_this_course,base_purchase_section,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context"
     r = requests.get(url_check_course_status, allow_redirects=False)
     print(url_check_course_status)
     if r.status_code in (404, 302, 301):
-        return None,None,None,None,None,0,None,None,None,None,None,None,None
-    content_html = r.content.decode("utf-8") 
-    category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description = get_data_course(content_html)
-    return category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description
+        return None, None, None, None, None, None, None, None, None, None, None, None, None
+    content_html = r.content.decode("utf-8")
+    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description = get_data_course(
+        content_html)
+    return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description
+
 
 def get_data_course(content_html):
     # print("get data course")
@@ -377,12 +396,12 @@ def get_data_course(content_html):
     language = my_json['locale']['simple_english_title']
     content_length = my_json['estimated_content_length']
     rating = my_json['avg_rating_recent']
-    rating = round(float(rating),1)
+    rating = round(float(rating), 1)
     number_reviews = my_json['num_reviews']
     headline = my_json['headline']
     description = my_json['description']
     level = my_json['instructional_level']
-    return category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,coupon_code,language,headline,description
+    return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description
 
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 try:
@@ -399,24 +418,27 @@ tm = threading.Thread(target=main, daemon=True)
 tm.start()
 tm.join()
 
-with open('coupon_link.txt','r') as f:
+with open('coupon_link.txt', 'r') as f:
     all_link = f.readlines()
-    
+
 list_object = []
 
 for coupon_link in all_link:
-    _,coupon_code = coupon_link.split('/?couponCode=')
-    coupon_link = coupon_link.replace('\n','')
-    coupon_code = coupon_code.replace('\n','')
+    _, coupon_code = coupon_link.split('/?couponCode=')
+    coupon_link = coupon_link.replace('\n', '')
+    coupon_code = coupon_code.replace('\n', '')
     course_id = get_course_id(coupon_link)
 
-    price,price_string,preview_img,preview_video,duration,end_day = coupon_status(course_id,coupon_code)
-    category,sub_category,course_title,level,author,content_length,rating,number_reviews,students,_,language,headline,description = course_status(course_id)
-    if int(price) == 0 and end_day != 0 and content_length != 0:
-        coupon_object = {'course_id':f"{course_id}",'category': f"{category}",'sub_category':f"{sub_category}",'title':f"{course_title}",'level':f"{level}",'author':f"{author}",'duration':f"{duration}",'rating':f"{rating}",'reviews':f"{number_reviews}",'students':f"{students}",'coupon_code':f"{coupon_code}",'preview_img':f"{preview_img}",'coupon_link':f"{coupon_link}",'end_day':f"{end_day}",'headline':f"{headline}",'description':f"{description}",'preview_video':f"{preview_video}"}
+    price, price_string, preview_img, preview_video, duration, end_day = coupon_status(
+        course_id, coupon_code)
+    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, _, language, headline, description = course_status(
+        course_id)
+    if int(price) == 0 and end_day != None and content_length != None:
+        coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{duration}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
+                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}"}
         list_object.append(coupon_object)
     else:
-        with open("error.log",'a') as f:
+        with open("error.log", 'a') as f:
             f.writelines(f"{coupon_link}\n")
 
 
@@ -424,9 +446,10 @@ time_zone = pytz.timezone('Europe/Madrid')
 last_time_update = datetime.now(time_zone)
 last_time_update = last_time_update.strftime("%Y-%m-%d %H:%M:%S")
 
-list_json_result = {"last_time_update":last_time_update,"results":list_object}
+list_json_result = {
+    "last_time_update": last_time_update, "results": list_object}
 
 final_json = json.dumps(list_json_result)
 
-with open('final_api.json','w') as f:
+with open('final_api.json', 'w') as f:
     f.writelines(final_json)
