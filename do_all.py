@@ -134,7 +134,9 @@ def real_discount():
         r = requests.get(url)
         soup = bs(r.content, "html5lib")
         try:
-            link = soup.select_one("a[href^='https://www.udemy.com']")["href"]
+            # link = soup.select_one("a[href^='https://www.udemy.com']")["href"]
+            link = soup.find("div",class_="col-xs-12 col-md-12 col-sm-12 text-center").a['href']
+            # link = link.replace("http://click.linksynergy.com/fs-bin/click?id=bnwWbXPyqPU&subid=&offerid=323058.1&type=10&tmpid=14537&RD_PARM1=","")
             rd_links.append(link.strip())
         except:
             pass
