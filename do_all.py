@@ -136,7 +136,7 @@ def real_discount():
         try:
             # link = soup.select_one("a[href^='https://www.udemy.com']")["href"]
             link = soup.find("div",class_="col-xs-12 col-md-12 col-sm-12 text-center").a['href']
-            # link = link.replace("http://click.linksynergy.com/fs-bin/click?id=bnwWbXPyqPU&subid=&offerid=323058.1&type=10&tmpid=14537&RD_PARM1=","")
+            link = link.replace("http://click.linksynergy.com/fs-bin/click?id=bnwWbXPyqPU&subid=&offerid=323058.1&type=10&tmpid=14537&RD_PARM1=","")
             rd_links.append(link.strip())
         except:
             pass
@@ -407,10 +407,9 @@ def get_data_course(content_html):
 
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 try:
-    os.remove("error.log")
     os.remove("coupon_link.txt")
-    os.remove("final_api.csv")
     os.remove("final_api.json")
+    os.remove("error.log")
 except:
     pass
 
