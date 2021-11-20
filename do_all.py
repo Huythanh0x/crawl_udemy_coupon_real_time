@@ -406,6 +406,9 @@ def get_data_course(content_html):
     return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description
 
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
+
+start  = time.time()
+
 try:
     os.remove("coupon_link.txt")
     os.remove("final_api.json")
@@ -454,3 +457,6 @@ final_json = json.dumps(list_json_result)
 
 with open('final_api.json', 'w') as f:
     f.writelines(final_json)
+
+end = time.time()
+print(f"It took {end-start} seconds to update data json")
