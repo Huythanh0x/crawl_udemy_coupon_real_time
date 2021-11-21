@@ -428,7 +428,7 @@ with open('coupon_link.txt', 'r') as f:
 list_object = []
 
 for coupon_link in all_link:
-    _, coupon_code = coupon_link.split('/?couponCode=')
+    _, coupon_code = coupon_link.split('couponCode=')
     coupon_link = coupon_link.replace('\n', '')
     coupon_code = coupon_code.replace('\n', '')
     course_id = get_course_id(coupon_link)
