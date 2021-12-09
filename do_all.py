@@ -431,8 +431,10 @@ for coupon_link in all_link:
     _, coupon_code = coupon_link.split('couponCode=')
     coupon_link = coupon_link.replace('\n', '')
     coupon_code = coupon_code.replace('\n', '')
-    course_id = get_course_id(coupon_link)
-
+    try:
+        course_id = get_course_id(coupon_link)
+    except:
+        continue
     price, price_string, preview_img, preview_video, duration, end_day = coupon_status(
         course_id, coupon_code)
     category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, _, language, headline, description = course_status(
