@@ -1,10 +1,8 @@
 import os
 
-# for i in ["requests","bs4","html5lib","tqdm"]:
-#     print("installing",i)
-#     os.system(f"pip3 install {i} -U")
-
-
+for i in ["requests","bs4","html5lib","tqdm"]:
+    print("installing",i)
+    os.system(f"pip3 install {i} -U")
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -17,8 +15,6 @@ import os
 import pytz
 from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
-from decimal import Decimal
-
 from bs4 import BeautifulSoup as bs
 
 tqdm = partial(tqdm, position=0, leave=True)
