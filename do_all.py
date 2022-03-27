@@ -232,7 +232,6 @@ def teaching_guide():
 
 def create_scrape_obj():
     funcs = {
-        "Discudemy": threading.Thread(target=discudemy, daemon=True),
         "Udemy Freebies": threading.Thread(target=udemy_freebies, daemon=True),
         "Tutorial Bar": threading.Thread(target=tutorialbar, daemon=True),
         "Real Discount": threading.Thread(target=real_discount, daemon=True),
@@ -241,6 +240,16 @@ def create_scrape_obj():
         "E-next": threading.Thread(target=enext, daemon=True),
         "TeachinGuide": threading.Thread(target=teaching_guide, daemon=True),
     }
+    # funcs = {
+    #     "Discudemy": threading.Thread(target=discudemy, daemon=True),
+    #     "Udemy Freebies": threading.Thread(target=udemy_freebies, daemon=True),
+    #     "Tutorial Bar": threading.Thread(target=tutorialbar, daemon=True),
+    #     "Real Discount": threading.Thread(target=real_discount, daemon=True),
+    #     "Course Vania": threading.Thread(target=coursevania, daemon=True),
+    #     "IDownloadCoupons": threading.Thread(target=idcoupons, daemon=True),
+    #     "E-next": threading.Thread(target=enext, daemon=True),
+    #     "TeachinGuide": threading.Thread(target=teaching_guide, daemon=True),
+    # }
     return funcs
 
 
@@ -368,16 +377,16 @@ def get_data_coupon(content_html):
 
 
 def course_status(course_id):
-    url_check_course_status = f"https://www.udemy.com/api-2.0/courses/{course_id}/?fields[course]=title,context_info,primary_category,primary_subcategory,avg_rating_recent,visible_instructors,locale,estimated_content_length,num_subscribers,num_reviews,description,headline,instructional_level"
+    url_check_course_status = f"https://www.udemy.com/api-2.0/courses/{course_id}/?fields[course]=title,context_info,primary_category,primary_subcategory,avg_rating_recent,visible_instructors,locale,estimated_content_length,num_subscribers,num_reviews,description,headline,instructional_level,,locale"
     # url_check_course_status = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons,price_text,deal_badge,discount_expiration,redeem_coupon,gift_this_course,base_purchase_section,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context"
     r = requests.get(url_check_course_status, allow_redirects=False)
     print(url_check_course_status)
     if r.status_code in (404, 302, 301):
         return None, None, None, None, None, None, None, None, None, None, None, None, None
     content_html = r.content.decode("utf-8")
-    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description = get_data_course(
+    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = get_data_course(
         content_html)
-    return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description
+    return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale
 
 
 def get_data_course(content_html):
@@ -399,7 +408,8 @@ def get_data_course(content_html):
     headline = my_json['headline']
     description = my_json['description']
     level = my_json['instructional_level']
-    return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description
+    locale = my_json['locale']['simple_english_title']
+    return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale
 
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 
@@ -419,7 +429,7 @@ tm.start()
 tm.join()
 
 with open('coupon_link.txt', 'r') as f:
-    all_link = f.readlines()
+    all_link = set(f.readlines())
 
 list_object = []
 
@@ -433,11 +443,11 @@ for coupon_link in all_link:
         continue
     price, price_string, preview_img, preview_video, duration, end_day = coupon_status(
         course_id, coupon_code)
-    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, _, language, headline, description = course_status(
+    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = course_status(
         course_id)
     if int(price) == 0 and end_day != None and content_length != None:
         coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{duration}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
-                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}"}
+                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'locale':f"{locale}"}
         list_object.append(coupon_object)
     else:
         with open("error.log", 'a') as f:
