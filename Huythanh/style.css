@@ -1,0 +1,262 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    text-decoration: none;
+    
+}
+
+body{
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: white;
+}
+
+.container{
+    flex: 1;
+    position: relative;
+    margin-left: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+    flex-wrap: wrap;
+}
+
+.container .box{
+    position: relative;
+    width: 300px;
+    height: 380px;
+    color: #fff;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 30px;
+    transition: 0.5s;
+}
+
+.container .box:hover{
+    transform: translateY(-20px);
+
+}
+.container .box::before
+{
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(315deg,#4dff03,#00d0ff);
+}
+
+.container .box::after
+{
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(315deg,#4dff03,#00d0ff);
+    filter: blur(20px);
+}
+
+.container .box span{
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    background: rgba(0,0,0,0.9);
+    z-index: 2;
+}
+
+
+.container .box .content{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 6px;
+    z-index: 10;
+    
+    
+    
+}
+.container .box .content .remaining_div{
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 140px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    text-transform:  uppercase;
+    text-decoration: none;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4 );
+    background-size: 400%;
+    border-bottom-right-radius: 20px;
+    animation: animate 8s linear infinite;
+}
+@keyframes animate{
+    0%{
+        background-position: 0%;
+    }
+    100%{
+        background-position: 400%;
+    }
+}
+
+.container .box h2{
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #fff;
+    margin: 10px;
+    margin-bottom: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+
+
+}
+.container .box .author_div{
+    font-weight: 100;
+    margin: 10px;
+    margin-top: 5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+
+
+}
+
+.container .box .category{
+    text-align: center;
+    font-weight: 700;
+    margin: 10px;
+    margin-top: 25px;
+    font-size: 1.1em;
+
+}
+
+.container .box .review{
+
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    font-size: 1.2em;
+
+}
+
+
+.container .box .content .rating_div{
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    text-transform:  uppercase;
+    text-decoration: none;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4 );
+    background-size: 400%;
+    border-top-left-radius: 10px;
+    animation: animate 8s linear infinite;
+   
+}
+.row{
+    display: flex;
+
+    
+}
+
+.search-filter-container{
+    position: fixed;
+    top: 40px;
+    flex: 0.2;
+    height: fit-content;
+    color: #fff;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 30px;
+    z-index: 11;
+}
+
+.search-filter-container::before
+{
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(315deg,#4dff03,#00d0ff);
+}
+
+.search-filter-container::after
+{
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(315deg,#4dff03,#00d0ff);
+    filter: blur(20px);
+}
+
+.search-filter-container .vien{
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    background: rgba(0,0,0,0.9);
+    z-index: 2;
+}
+
+
+.search-filter-container .content{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 6px;
+    z-index: 10;
+    margin: 20px;
+    
+}
+
+.search-filter-header h2{
+    position: relative;
+    left: 50%;
+    margin: 20px 0px;
+    width: fit-content;
+    transform: translateX(-50%);
+    font-size: 2rem;
+}
+.discount_level_filter{
+    margin-bottom: 20px;
+}
+
+.filter-name{
+    font-size: 1.3rem;
+}
+.bv-no-focus-ring{
+    margin-left: 5px;
+    font-size: 1.3rem;
+
+}
