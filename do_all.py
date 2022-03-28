@@ -410,7 +410,7 @@ try:
 except:
     pass
 
-PAGE_NTH = 2
+PAGE_NTH = 6
 all_functions = create_scrape_obj()
 tm = threading.Thread(target=main, daemon=True)
 tm.start()
