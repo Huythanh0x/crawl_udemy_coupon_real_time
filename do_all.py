@@ -1,8 +1,8 @@
 import os
-
-for i in ["requests","bs4","html5lib","tqdm"]:
-    print("installing",i)
-    os.system(f"pip3 install {i} -U")
+# ! uncomment in colab
+# for i in ["requests","bs4","html5lib","tqdm"]:
+#     print("installing",i)
+#     os.system(f"pip3 install {i} -U")
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -72,7 +72,7 @@ def udemy_freebies():
     for index, items in enumerate(big_all):
         uf_bar.update(1)
         title = items.a.text
-        url = bs(requests.get(items.a["href"]).content, "html5lib").find(
+        url = bs(requests.get(items.a["href"]).contentpreview_img, "html5lib").find(
             "a", class_="button-icon"
         )["href"]
         link = requests.get(url).url
@@ -232,6 +232,7 @@ def teaching_guide():
 
 def create_scrape_obj():
     funcs = {
+        "Discudemy": threading.Thread(target=discudemy, daemon=True),
         "Udemy Freebies": threading.Thread(target=udemy_freebies, daemon=True),
         "Tutorial Bar": threading.Thread(target=tutorialbar, daemon=True),
         "Real Discount": threading.Thread(target=real_discount, daemon=True),
@@ -240,16 +241,6 @@ def create_scrape_obj():
         "E-next": threading.Thread(target=enext, daemon=True),
         "TeachinGuide": threading.Thread(target=teaching_guide, daemon=True),
     }
-    # funcs = {
-    #     "Discudemy": threading.Thread(target=discudemy, daemon=True),
-    #     "Udemy Freebies": threading.Thread(target=udemy_freebies, daemon=True),
-    #     "Tutorial Bar": threading.Thread(target=tutorialbar, daemon=True),
-    #     "Real Discount": threading.Thread(target=real_discount, daemon=True),
-    #     "Course Vania": threading.Thread(target=coursevania, daemon=True),
-    #     "IDownloadCoupons": threading.Thread(target=idcoupons, daemon=True),
-    #     "E-next": threading.Thread(target=enext, daemon=True),
-    #     "TeachinGuide": threading.Thread(target=teaching_guide, daemon=True),
-    # }
     return funcs
 
 
@@ -332,8 +323,8 @@ def write_all_coupon_links(links_ls):
 
 def coupon_status(course_id, coupon_code):
     url_check_status_coupons = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?couponCode={coupon_code}&components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons"
+    print(url_check_status_coupons)
     r = requests.get(url_check_status_coupons, allow_redirects=False)
-    # print(url_check_status_coupons)
     if r.status_code in (404, 302, 301):
         return 0, None, None, None, None, None
     content_html = r.content.decode("utf-8")
@@ -347,7 +338,6 @@ def coupon_status(course_id, coupon_code):
 
 
 def get_data_coupon(content_html):
-    # print("get status coupon")
     my_json = json.loads(content_html)
     try:
         price = my_json['price_text']['data']['pricing_result']['price']['amount']
@@ -362,11 +352,11 @@ def get_data_coupon(content_html):
     except:
         price_string = "NOT FREE TODAY"
     try:
-        preview_img = my_json['sidebar_container']['componentProps']['introductionAsset']['preview_image_url']
+        preview_img = my_json['sidebar_container']['componentProps']['introductionAsset']['images']['image_480x270']
     except:
         preview_img = "null"
     try:
-        preview_video = my_json['sidebar_container']['componentProps']['introductionAsset']['media_sources'][0]['src']
+        preview_video = my_json['sidebar_container']['componentProps']['introductionAsset']['images'][0]['src']
     except:
         preview_video = ""
     try:
@@ -378,11 +368,10 @@ def get_data_coupon(content_html):
 
 def course_status(course_id):
     url_check_course_status = f"https://www.udemy.com/api-2.0/courses/{course_id}/?fields[course]=title,context_info,primary_category,primary_subcategory,avg_rating_recent,visible_instructors,locale,estimated_content_length,num_subscribers,num_reviews,description,headline,instructional_level,,locale"
-    # url_check_course_status = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons,price_text,deal_badge,discount_expiration,redeem_coupon,gift_this_course,base_purchase_section,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context"
     r = requests.get(url_check_course_status, allow_redirects=False)
     print(url_check_course_status)
     if r.status_code in (404, 302, 301):
-        return None, None, None, None, None, None, None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None, None, None, None, None, None,None
     content_html = r.content.decode("utf-8")
     category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = get_data_course(
         content_html)
@@ -390,7 +379,6 @@ def course_status(course_id):
 
 
 def get_data_course(content_html):
-    # print("get data course")
     my_json = json.loads(content_html)
     course_title = my_json['title']
     try:
@@ -422,14 +410,14 @@ try:
 except:
     pass
 
-PAGE_NTH = 6
+PAGE_NTH = 2
 all_functions = create_scrape_obj()
 tm = threading.Thread(target=main, daemon=True)
 tm.start()
 tm.join()
 
 with open('coupon_link.txt', 'r') as f:
-    all_link = set(f.readlines())
+    all_link = f.readlines()
 
 list_object = []
 
@@ -443,10 +431,9 @@ for coupon_link in all_link:
         continue
     price, price_string, preview_img, preview_video, duration, end_day = coupon_status(
         course_id, coupon_code)
-    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = course_status(
-        course_id)
+    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = course_status(course_id)
     if int(price) == 0 and end_day != None and content_length != None:
-        coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{duration}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
+        coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{content_length}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
                          'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'locale':f"{locale}"}
         list_object.append(coupon_object)
     else:
