@@ -17,6 +17,7 @@ from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
 from bs4 import BeautifulSoup as bs
 
+PAGE_NTH = 3
 tqdm = partial(tqdm, position=0, leave=True)
 ###############################################################################
 
@@ -53,6 +54,7 @@ def discudemy():
         except AttributeError:
             continue
     du_bar.close()
+    return du_links
 
 
 def udemy_freebies():
@@ -71,13 +73,13 @@ def udemy_freebies():
 
     for index, items in enumerate(big_all):
         uf_bar.update(1)
-        title = items.a.text
-        url = bs(requests.get(items.a["href"]).contentpreview_img, "html5lib").find(
-            "a", class_="button-icon"
-        )["href"]
+        url_to_page = items.find("a")["href"]
+        r=requests.get(url_to_page)
+        url = bs(r.content, "html5lib").find("a",class_="button-icon")["href"]
         link = requests.get(url).url
         uf_links.append(link.strip())
     uf_bar.close()
+    return uf_links
 
 
 def tutorialbar():
@@ -98,7 +100,6 @@ def tutorialbar():
 
     for index, items in enumerate(big_all):
         tb_bar.update(1)
-        title = items.a.text
         url = items.a["href"]
 
         r = requests.get(url)
@@ -107,6 +108,7 @@ def tutorialbar():
         if "www.udemy.com" in link:
             tb_links.append(link.strip())
     tb_bar.close()
+    return tb_links
 
 
 def real_discount():
@@ -137,6 +139,7 @@ def real_discount():
         except:
             pass
     rd_bar.close()
+    return rd_links
 
 
 def teaching_guide():
@@ -149,30 +152,31 @@ def teaching_guide():
 
 def coursevania():
 
-    global cv_links
-    cv_links = []
-    r = requests.get("https://coursevania.com/courses/")
-    soup = bs(r.content, "html5lib")
-    nonce = soup.find_all("script")[22].text[30:]
-    nonce = json.loads(nonce.strip().strip(";"))["load_content"]
-    r = requests.get(
-        "https://coursevania.com/wp-admin/admin-ajax.php?&template=courses/grid&args={%22posts_per_page%22:%2230%22}&action=stm_lms_load_content&nonce="
-        + nonce
-        + "&sort=date_high"
-    ).json()
-    soup = bs(r["content"], "html5lib")
-    all = soup.find_all(
-        "div", attrs={"class": "stm_lms_courses__single--title"})
-    cv_bar = tqdm(total=len(all), desc="Course Vania")
+    # global cv_links
+    # cv_links = []
+    # r = requests.get("https://coursevania.com/courses/")
+    # soup = bs(r.content, "html5lib")
+    # nonce = soup.find_all("script")[22].text[30:]
+    # nonce = json.loads(nonce.strip().strip(";"))["load_content"]
+    # r = requests.get(
+    #     "https://coursevania.com/wp-admin/admin-ajax.php?&template=courses/grid&args={%22posts_per_page%22:%2230%22}&action=stm_lms_load_content&nonce="
+    #     + nonce
+    #     + "&sort=date_high"
+    # ).json()
+    # soup = bs(r["content"], "html5lib")
+    # all = soup.find_all(
+    #     "div", attrs={"class": "stm_lms_courses__single--title"})
+    # cv_bar = tqdm(total=len(all), desc="Course Vania")
 
-    for index, item in enumerate(all):
-        cv_bar.update(1)
-        title = item.h5.text
-        r = requests.get(item.a["href"])
-        soup = bs(r.content, "html5lib")
-        cv_links.append(
-            soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"].strip())
-    cv_bar.close()
+    # for index, item in enumerate(all):
+    #     cv_bar.update(1)
+    #     title = item.h5.text
+    #     r = requests.get(item.a["href"])
+    #     soup = bs(r.content, "html5lib")
+    #     cv_links.append(
+    #         soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"].strip())
+    # cv_bar.close()
+    pass
 
 
 def idcoupons():
@@ -187,21 +191,21 @@ def idcoupons():
         )
         soup = bs(r.content, "html5lib")
         all = soup.find_all(
-            "a", attrs={"class": "button product_type_external"})
+            "a", attrs={"class": "product_type_external"})
         big_all.extend(all)
     idc_bar = tqdm(total=len(big_all), desc="IDownloadCoupons")
-
     for index, item in enumerate(big_all):
         idc_bar.update(1)
-        title = item["aria-label"]
-        link = unquote(item["href"]).split("url=")
+        link = str(item["href"]).split("ulp=")
         try:
             link = link[1]
         except IndexError:
             link = link[0]
+        link = unquote(link)
         if link.startswith("https://www.udemy.com"):
             idc_links.append(link.strip())
     idc_bar.close()
+    return idc_links
 
 
 def enext() -> list:
@@ -220,6 +224,7 @@ def enext() -> list:
             pass
 
     en_bar.close()
+    return en_links
 
 
 def teaching_guide():
@@ -228,6 +233,7 @@ def teaching_guide():
         "https://teachinguide.azure-api.net/course-coupon?sortCol=featured&sortDir=DESC&length=100&page=1&inkw=&discount=100&language=").json()
     list_object_coupon = my_json['results']
     tg_links = [coupon["CouponLink"] for coupon in list_object_coupon]
+    return tg_links
 
 
 def create_scrape_obj():
@@ -410,7 +416,6 @@ try:
 except:
     pass
 
-PAGE_NTH = 6
 all_functions = create_scrape_obj()
 tm = threading.Thread(target=main, daemon=True)
 tm.start()
@@ -461,3 +466,5 @@ with open('final_api.json', 'w') as f:
 
 end = time.time()
 print(f"It took {end-start} seconds to update data json")
+
+print(enext())
