@@ -1,8 +1,8 @@
 import os
 # ! uncomment in colab
-# for i in ["requests","bs4","html5lib","tqdm"]:
-#     print("installing",i)
-#     os.system(f"pip3 install {i} -U")
+for i in ["requests","bs4","html5lib","tqdm"]:
+    print("installing",i)
+    os.system(f"pip3 install {i} -U")
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -17,7 +17,7 @@ from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
 from bs4 import BeautifulSoup as bs
 
-PAGE_NTH = 3
+PAGE_NTH = 6
 tqdm = partial(tqdm, position=0, leave=True)
 ###############################################################################
 
