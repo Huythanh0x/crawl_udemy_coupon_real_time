@@ -209,21 +209,22 @@ def idcoupons():
     return idc_links
 
 
-def enext() -> list:
+def enext():
+    global en_links
     en_links = []
     r = requests.get("https://e-next.in/e/udemycoupons.php")
     soup = bs(r.content, "html.parser")
-    big_all = soup.find_all("p", {"class": "p2"})
-    big_all.pop(0)
+    big_all = soup.find_all("a", {"class": "btn btn-primary btn-sm"})
+    # big_all.pop(0)
     en_bar = tqdm(total=len(big_all), desc="E-next")
-    for i in big_all:
+    for a in big_all:
         en_bar.update(1)
         try:
-            link = i.a["href"]
+            link = a["href"]
             en_links.append(link.strip())
         except:
             pass
-
+    print(len(en_links))
     en_bar.close()
     return en_links
 
@@ -246,7 +247,7 @@ def create_scrape_obj():
         "Course Vania": threading.Thread(target=coursevania, daemon=True),
         "IDownloadCoupons": threading.Thread(target=idcoupons, daemon=True),
         "E-next": threading.Thread(target=enext, daemon=True),
-        "TeachinGuide": threading.Thread(target=teaching_guide, daemon=True),
+        # "TeachinGuide": threading.Thread(target=teaching_guide, daemon=True),
     }
     return funcs
 
@@ -420,7 +421,7 @@ def execute_coupon(coupon_link,coupon_code):
     #! check content_length and end_day later
     # if int(price) == 0 and end_day != None and content_length != None:
     if int(price) == 0:
-        coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{content_length}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
+        coupon_object = {'price':f"{price}",'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{content_length}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'locale':f"{locale}"}
         return coupon_object
     else:
@@ -479,6 +480,7 @@ time_zone = pytz.timezone('Europe/Madrid')
 last_time_update = datetime.now(time_zone)
 last_time_update = last_time_update.strftime("%Y-%m-%d %H:%M:%S")
 
+
 list_json_result = {"last_time_update": last_time_update, "results": list_object_coupons}
 
 final_json = json.dumps(list_json_result)
@@ -488,3 +490,5 @@ with open('final_api.json', 'w') as f:
 
 end = time.time()
 print(f"It took {end-start} seconds to update data json")
+
+print(len(enext()))
