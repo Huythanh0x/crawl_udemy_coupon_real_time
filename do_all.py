@@ -255,11 +255,12 @@ def create_scrape_obj():
 ####################################################################
 
 def get_course_id(url):
-    r = requests.get(url, allow_redirects=False)
+    r = requests.get(url, allow_redirects=True)
     if r.status_code in (404, 302, 301):
-        return False
+        print(url)
+        return "404"
     if "/course/draft/" in url:
-        return False
+        return "draft"
     soup = bs(r.content, "html5lib")
 
     try:
@@ -419,14 +420,16 @@ def execute_coupon(coupon_link,coupon_code):
         course_id, coupon_code)
     category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = course_status(course_id)
     #! check content_length and end_day later
-    # if int(price) == 0 and end_day != None and content_length != None:
-    if int(price) == 0:
+    if int(price) == 0 and end_day != None and content_length != None:
+    # if int(price) == 0:
         coupon_object = {'price':f"{price}",'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{content_length}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'locale':f"{locale}"}
         return coupon_object
     else:
         with open("error.log", 'a') as f:
-            f.writelines(f"{int(price) == 0} {end_day != None} {content_length != None} check if not valid {coupon_link}\n")
+            # f.writelines(f"{int(price) == 0} {end_day != None} {content_length != None} check if not valid {coupon_link}\n")
+
+            f.writelines(f"{coupon_link}\n")
         return None
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 
@@ -490,5 +493,3 @@ with open('final_api.json', 'w') as f:
 
 end = time.time()
 print(f"It took {end-start} seconds to update data json")
-
-print(len(enext()))
