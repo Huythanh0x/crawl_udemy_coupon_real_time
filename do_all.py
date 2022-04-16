@@ -1,3 +1,4 @@
+from concurrent import futures
 import os
 # ! uncomment in colab
 # for i in ["requests","bs4","html5lib","tqdm"]:
@@ -17,7 +18,7 @@ from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
 from bs4 import BeautifulSoup as bs
 
-PAGE_NTH = 2
+PAGE_NTH = 6
 tqdm = partial(tqdm, position=0, leave=True)
 ###############################################################################
 
@@ -405,6 +406,27 @@ def get_data_course(content_html):
     locale = my_json['locale']['simple_english_title']
     return category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale
 
+
+def execute_coupon(coupon_link,coupon_code):
+    try:
+        course_id = get_course_id(coupon_link)
+    except Exception as e:
+        with open("error.log", 'a') as f:
+            f.writelines(f"{e} {coupon_link}\n")
+        return None        
+    price, price_string, preview_img, preview_video, duration, end_day = coupon_status(
+        course_id, coupon_code)
+    category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = course_status(course_id)
+    #! check content_length and end_day later
+    # if int(price) == 0 and end_day != None and content_length != None:
+    if int(price) == 0:
+        coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{content_length}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
+                        'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'locale':f"{locale}"}
+        return coupon_object
+    else:
+        with open("error.log", 'a') as f:
+            f.writelines(f"{int(price) == 0} {end_day != None} {content_length != None} check if not valid {coupon_link}\n")
+        return None
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 
 start  = time.time()
@@ -424,7 +446,9 @@ tm.join()
 with open('coupon_link.txt', 'r') as f:
     all_link = f.readlines()
 
-list_object = []
+list_object_coupons = []
+list_coupon_links = []
+list_coupon_codes = []
 
 coupon_bar = tqdm(total=len(all_link), desc="Discudemy")
 for coupon_link in all_link:
@@ -435,30 +459,27 @@ for coupon_link in all_link:
         _, coupon_code = coupon_link.split('couponCode=')
         coupon_link = coupon_link.replace('\n', '')
         coupon_code = coupon_code.replace('\n', '')
-        try:
-            course_id = get_course_id(coupon_link)
-        except:
-            continue
-        price, price_string, preview_img, preview_video, duration, end_day = coupon_status(
-            course_id, coupon_code)
-        category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = course_status(course_id)
-        if int(price) == 0 and end_day != None and content_length != None:
-            coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{content_length}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
-                            'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'locale':f"{locale}"}
-            list_object.append(coupon_object)
-        else:
-            with open("error.log", 'a') as f:
-                f.writelines(f"{coupon_link}\n")
+        list_coupon_codes.append(coupon_code)
+        list_coupon_links.append(coupon_link)       
     except Exception as e:
         with open("error.log", 'a') as f:
                 f.writelines(f"{e} \n{coupon_link}\n")
+coupon_bar.close()
+
+
+coupon_bar = tqdm(total=len(all_link), desc="Discudemy")
+with futures.ProcessPoolExecutor() as pool:
+  for coupon_object in pool.map(execute_coupon,list_coupon_links, list_coupon_codes):
+    if coupon_object is not None:
+        list_object_coupons.append(coupon_object)
+    coupon_bar.update(1)
 coupon_bar.close()
 
 time_zone = pytz.timezone('Europe/Madrid')
 last_time_update = datetime.now(time_zone)
 last_time_update = last_time_update.strftime("%Y-%m-%d %H:%M:%S")
 
-list_json_result = {"last_time_update": last_time_update, "results": list_object}
+list_json_result = {"last_time_update": last_time_update, "results": list_object_coupons}
 
 final_json = json.dumps(list_json_result)
 
