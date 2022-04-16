@@ -1,8 +1,8 @@
 import os
 # ! uncomment in colab
-for i in ["requests","bs4","html5lib","tqdm"]:
-    print("installing",i)
-    os.system(f"pip3 install {i} -U")
+# for i in ["requests","bs4","html5lib","tqdm"]:
+#     print("installing",i)
+#     os.system(f"pip3 install {i} -U")
 from functools import partial
 from tqdm import tqdm
 import requests
@@ -17,7 +17,7 @@ from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
 from bs4 import BeautifulSoup as bs
 
-PAGE_NTH = 6
+PAGE_NTH = 2
 tqdm = partial(tqdm, position=0, leave=True)
 ###############################################################################
 
@@ -329,7 +329,7 @@ def write_all_coupon_links(links_ls):
 
 def coupon_status(course_id, coupon_code):
     url_check_status_coupons = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?couponCode={coupon_code}&components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons"
-    print(url_check_status_coupons)
+    # print(url_check_status_coupons)
     r = requests.get(url_check_status_coupons, allow_redirects=False)
     if r.status_code in (404, 302, 301):
         return 0, None, None, None, None, None
@@ -375,7 +375,7 @@ def get_data_coupon(content_html):
 def course_status(course_id):
     url_check_course_status = f"https://www.udemy.com/api-2.0/courses/{course_id}/?fields[course]=title,context_info,primary_category,primary_subcategory,avg_rating_recent,visible_instructors,locale,estimated_content_length,num_subscribers,num_reviews,description,headline,instructional_level,,locale"
     r = requests.get(url_check_course_status, allow_redirects=False)
-    print(url_check_course_status)
+    # print(url_check_course_status)
     if r.status_code in (404, 302, 301):
         return None, None, None, None, None, None, None, None, None, None, None, None, None,None
     content_html = r.content.decode("utf-8")
@@ -426,7 +426,9 @@ with open('coupon_link.txt', 'r') as f:
 
 list_object = []
 
+coupon_bar = tqdm(total=len(all_link), desc="Discudemy")
 for coupon_link in all_link:
+    coupon_bar.update(1)
     try:
         if "source=discudemy&url=" in coupon_link:
             coupon_link = coupon_link.split("source=discudemy&url=")[1]
@@ -450,14 +452,13 @@ for coupon_link in all_link:
     except Exception as e:
         with open("error.log", 'a') as f:
                 f.writelines(f"{e} \n{coupon_link}\n")
-        
+coupon_bar.close()
 
 time_zone = pytz.timezone('Europe/Madrid')
 last_time_update = datetime.now(time_zone)
 last_time_update = last_time_update.strftime("%Y-%m-%d %H:%M:%S")
 
-list_json_result = {
-    "last_time_update": last_time_update, "results": list_object}
+list_json_result = {"last_time_update": last_time_update, "results": list_object}
 
 final_json = json.dumps(list_json_result)
 
@@ -466,5 +467,3 @@ with open('final_api.json', 'w') as f:
 
 end = time.time()
 print(f"It took {end-start} seconds to update data json")
-
-print(enext())
