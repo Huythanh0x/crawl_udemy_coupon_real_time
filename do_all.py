@@ -276,16 +276,6 @@ def get_course_id(url):
         # f.write(str(soup))
     return courseid
 
-
-def get_course_coupon(url):
-    query = urlsplit(url).query
-    params = parse_qs(query)
-    try:
-        params = {k: v[0] for k, v in params.items()}
-        return params["couponCode"]
-    except:
-        return ""
-
 #####################################################
 
 
@@ -315,7 +305,13 @@ def main():
                 pass
 
         links_ls = [x for x in links_ls if "couponCode=" in x]
-        links_ls = set(links_ls)
+        temp = []
+        for url in links_ls:
+            if "/?couponCode=" not in url:
+                url = url.replace("?couponCode=","/?couponCode=")
+            temp.append(url)
+
+        links_ls = set(temp)
         write_all_coupon_links(links_ls)
         print(f"length is {len(links_ls)}")
 
@@ -420,16 +416,16 @@ def execute_coupon(coupon_link,coupon_code):
         course_id, coupon_code)
     category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, coupon_code, language, headline, description,locale = course_status(course_id)
     #! check content_length and end_day later
-    if int(price) == 0 and end_day != None and content_length != None:
-    # if int(price) == 0:
+    # if int(price) == 0 and end_day != None and content_length != None:
+    if int(price) == 0:
         coupon_object = {'price':f"{price}",'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{content_length}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_link}", 'end_day': f"{end_day}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'locale':f"{locale}"}
         return coupon_object
     else:
         with open("error.log", 'a') as f:
-            # f.writelines(f"{int(price) == 0} {end_day != None} {content_length != None} check if not valid {coupon_link}\n")
+            f.writelines(f"{int(price) == 0} {end_day != None} {content_length != None} check if not valid {coupon_link}\n")
 
-            f.writelines(f"{coupon_link}\n")
+            # f.writelines(f"{coupon_link}\n")
         return None
   ############## MAIN ############# MAIN############## MAIN ############# MAIN ############## MAIN ############# MAIN ###########
 
