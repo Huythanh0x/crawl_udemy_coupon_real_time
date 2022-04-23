@@ -18,7 +18,7 @@ from datetime import datetime
 from urllib.parse import parse_qs, unquote, urlsplit
 from bs4 import BeautifulSoup as bs
 
-PAGE_NTH = 1
+PAGE_NTH = 6
 tqdm = partial(tqdm, position=0, leave=True)
 ###############################################################################
 
