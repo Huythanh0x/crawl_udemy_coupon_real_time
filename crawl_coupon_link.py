@@ -134,32 +134,6 @@ def real_discount():
     rd_bar.close()
 
 
-def coursevania():
-
-    global cv_links
-    cv_links = []
-    r = requests.get("https://coursevania.com/courses/")
-    soup = bs(r.content, "html5lib")
-    nonce = soup.find_all("script")[22].text[30:]
-    nonce = json.loads(nonce.strip().strip(";"))["load_content"]
-    r = requests.get(
-        "https://coursevania.com/wp-admin/admin-ajax.php?&template=courses/grid&args={%22posts_per_page%22:%2230%22}&action=stm_lms_load_content&nonce="
-        + nonce
-        + "&sort=date_high"
-    ).json()
-    soup = bs(r["content"], "html5lib")
-    all = soup.find_all("div", attrs={"class": "stm_lms_courses__single--title"})
-    cv_bar = tqdm(total=len(all), desc="Course Vania")
-
-    for index, item in enumerate(all):
-        cv_bar.update(1)
-        title = item.h5.text
-        r = requests.get(item.a["href"])
-        soup = bs(r.content, "html5lib")
-        cv_links.append(soup.find("div", attrs={"class": "stm-lms-buy-buttons"}).a["href"])
-    cv_bar.close()
-
-
 def idcoupons():
 
     global idc_links
@@ -211,7 +185,6 @@ def create_scrape_obj():
         "Udemy Freebies": threading.Thread(target=udemy_freebies, daemon=True),
         "Tutorial Bar": threading.Thread(target=tutorialbar, daemon=True),
         "Real Discount": threading.Thread(target=real_discount, daemon=True),
-        "Course Vania": threading.Thread(target=coursevania, daemon=True),
         "IDownloadCoupons": threading.Thread(target=idcoupons, daemon=True),
         "E-next": threading.Thread(target=enext, daemon=True),
     }
