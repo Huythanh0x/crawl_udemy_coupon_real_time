@@ -479,13 +479,11 @@ time_zone = pytz.timezone('Europe/Madrid')
 last_time_update = datetime.now(time_zone)
 last_time_update = last_time_update.strftime("%Y-%m-%d %H:%M:%S")
 
-
-list_json_result = {"last_time_update": last_time_update, "results": list_object_coupons}
-
-final_json = json.dumps(list_json_result)
-
-with open('final_api.json', 'w') as f:
-    f.writelines(final_json)
+if len(list_object_coupons) > 0:
+    list_json_result = {"last_time_update": last_time_update, "results": list_object_coupons}
+    final_json = json.dumps(list_json_result)
+    with open('final_api.json', 'w') as f:
+        f.writelines(final_json)
 
 end = time.time()
 print(f"It took {end-start} seconds to update data json")
