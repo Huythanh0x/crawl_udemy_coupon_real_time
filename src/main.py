@@ -12,19 +12,19 @@ from pqdm.processes import pqdm
 def execute_all_link():
     all_coupon_links = udemy_file_helper.get_all_coupon_links()
     total_bar = tqdm(total=len(all_coupon_links), desc="LOAD DATA TO JSON")
-    list_data_objects = pqdm(all_coupon_links[:10], execute_single_sing, n_jobs=8)
+    list_data_objects = pqdm(all_coupon_links[:16], execute_single_sing, n_jobs=8)
     udemy_file_helper.write_data_to_json(list_data_objects)
     total_bar.close()
 
 
 def execute_single_sing(coupon_url):
     u = UdemyCourseData(coupon_url)
-    course_id, coupon_url, price, coupon_code, expired_date, course_title, headline, description, author, category, sub_category, level, content_length, duration, preview_img, preview_video, number_reviews, students, rating, language = u.get_full_course_data()
+    course_id, coupon_url, price, coupon_code, expired_date,uses_remaining, course_title, headline, description, author, category, sub_category, level, content_length, preview_img, preview_video, number_reviews, students, rating, language = u.get_full_course_data()
     if int(price) == 0 and expired_date != 0:
         with open('udemy_coupon.csv', 'a') as f:
-            f.writelines(f"{course_id},{category},{sub_category},{course_title},{level},{author},{duration},{rating},{rating},{number_reviews},{students},{coupon_code},{preview_img},{coupon_url},{expired_date},{headline},{description},{preview_video}\n")
-        coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'level': f"{level}", 'author': f"{author}", 'duration': f"{duration}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
-                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_url}", 'expired_date': f"{expired_date}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}"}
+            f.writelines(f"{course_id},{category},{sub_category},{course_title},{level},{author},{content_length},{rating},{rating},{number_reviews},{students},{coupon_code},{preview_img},{coupon_url},{expired_date},{uses_remaining},{headline},{description},{preview_video},{language}\n")
+        coupon_object = {'course_id': f"{course_id}", 'category': f"{category}", 'sub_category': f"{sub_category}", 'title': f"{course_title}", 'content_length': f"{content_length}", 'level': f"{level}", 'author': f"{author}", 'rating': f"{rating}", 'reviews': f"{number_reviews}",
+                         'students': f"{students}", 'coupon_code': f"{coupon_code}", 'preview_img': f"{preview_img}", 'coupon_link': f"{coupon_url}", 'expired_date': f"{expired_date}","uses_remaining":f"{uses_remaining}", 'headline': f"{headline}", 'description': f"{description}", 'preview_video': f"{preview_video}",'language': f"{language}"}
         return coupon_object
     else:
         with open("error.log", 'a') as f:
@@ -35,11 +35,11 @@ def execute_single_sing(coupon_url):
 start = time.time()
 try:
     os.remove("udemy_coupon.csv")
-    os.remove("coupon_link.txt")
+    # os.remove("coupon_link.txt")
     os.remove("udemy_coupon.json")
     os.remove("error.log")
 except:
     pass
-udemy_coupon_url_crawler.main()
+# udemy_coupon_url_crawler.main()
 execute_all_link()
 print(f"It took {time.time()-start} second to crawl")

@@ -11,9 +11,9 @@ class UdemyCourseData():
         return f"{self.course_id} {self.coupon_code} {self.coupon_url}"
 
     def get_full_course_data(self):
-        price, preview_img, preview_video, duration, expired_date = udemy_api_helper.get_coupon_status(
+        price, preview_img, preview_video, expired_date,uses_remaining = udemy_api_helper.get_coupon_status(
             self.course_id, self.coupon_code)
         # if int(price) == 0: return self.course_id,self.coupon_url,price,self.coupon_code,expired_date,None,None,None,None,None,None,None,None,None, preview_img,None,None,None,None,None
         category, sub_category, course_title, level, author, content_length, rating, number_reviews, students, language, headline, description = udemy_api_helper.get_course_status(
             self.course_id)
-        return self.course_id, self.coupon_url, price, self.coupon_code, expired_date, course_title, headline, description, author, category, sub_category, level, content_length, duration, preview_img, preview_video, number_reviews, students, rating, language
+        return self.course_id, self.coupon_url, price, self.coupon_code, expired_date,uses_remaining, course_title, headline, description, author, category, sub_category, level, content_length, preview_img, preview_video, number_reviews, students, rating, language

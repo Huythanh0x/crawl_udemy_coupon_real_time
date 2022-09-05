@@ -33,9 +33,9 @@ def get_coupon_status(course_id, coupon_code):
     # TODO NOT FOUND coupon
     # if "Not found" in content_html:
     #     print(f"NOT FOUND {url_check_status_coupons}")
-    price, preview_img, preview_video, duration, expired_date = extract_data_coupon(
+    price, preview_img, preview_video, expired_date,uses_remaining = extract_data_coupon(
         content_html)
-    return price, preview_img, preview_video, duration, expired_date
+    return price, preview_img, preview_video, expired_date,uses_remaining
 
 
 def extract_data_coupon(content_html):
@@ -44,24 +44,20 @@ def extract_data_coupon(content_html):
         price = my_json['price_text']['data']['pricing_result']['price']['amount']
     except:
         price = None
-        
     try:
         expired_date = my_json['price_text']['data']['pricing_result']['campaign']['end_time']
     except:
         expired_date = 0
     try:
-        preview_img = my_json['sidebar_container']['componentProps']['introductionAsset']['preview_image_url']
+        preview_img = my_json['sidebar_container']['componentProps']['introductionAsset']['images']['image_750x422']
     except:
         preview_img = "null"
     try:
-        preview_video = my_json['sidebar_container']['componentProps']['introductionAsset']['media_sources'][0]['src']
+        preview_video = "https://www.udemy.com" + my_json['sidebar_container']['componentProps']['introductionAsset']['course_preview_path']
     except:
-        preview_video = ""
-    try:
-        duration = my_json['sidebar_container']['componentProps']['incentives']['video_content_length']
-    except:
-        duration = "null"
-    return price, preview_img, preview_video, duration, expired_date
+        preview_video = "null"
+    uses_remaining = my_json['price_text']['data']['pricing_result']['campaign']['uses_remaining']
+    return price, preview_img, preview_video, expired_date,uses_remaining
 
 
 def get_course_status(course_id):
