@@ -15,7 +15,7 @@
 ***Step 2:*** Then it will check whether these coupon is valid or not from [Udemy API](https://www.udemy.com/api-2.0). Then it will create & dump all coupons into [final_api.json](https://github.com/Huythanh0x/crawl_coupon_link/blob/master/final_api.json)
 
 ## JSON FORMAT
-![Preview](https://github.com/Huythanh0x/crawl_coupon_link/blob/master/json_format_screenhot.png)
+![Preview](https://github.com/Huythanh0x/crawl_coupon_link/blob/master/screen_shot/json_format_screenhot.png)
 
 ## Execute code
 
