@@ -9,7 +9,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
-from selenium.webdriver import ActionChains
 
 
 def discudemy():
@@ -231,4 +230,4 @@ def main():
     tm.join()
 
 
-MAX_PAGE_LOAD = 6
+MAX_PAGE_LOAD = 1

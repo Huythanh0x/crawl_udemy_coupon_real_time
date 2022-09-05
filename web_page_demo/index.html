@@ -338,7 +338,7 @@
       today = new Date().getTime();
 
       let apiUrl =
-        "https://raw.githubusercontent.com/Huythanh0x/crawl_coupon_link/master/final_api.json";
+        "https://raw.githubusercontent.com/BlogBatDauLapTrinh/crawl_coupon_link/master/udemy_coupon.json";
 
       fetch(apiUrl)
         .then((response) => {
@@ -349,7 +349,7 @@
           container_div.innerHTML = "";
           for (let course of courses) {
             //tạo thẻ Ngày còn lại
-            endTime = Date.parse(course["end_day"]);
+            endTime = Date.parse(course["expired_date"]);
             timeLeft = new Date(endTime - today);
 
             let remaining = document.createElement("div");
