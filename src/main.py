@@ -10,9 +10,9 @@ from pqdm.processes import pqdm
 
 
 def execute_all_link():
-    all_coupon_links = udemy_file_helper.get_all_coupon_links()
+    all_coupon_links = udemy_file_helper.get_all_coupon_links()[:]
     total_bar = tqdm(total=len(all_coupon_links), desc="LOAD DATA TO JSON")
-    list_data_objects = pqdm(all_coupon_links[:16], execute_single_sing, n_jobs=8)
+    list_data_objects = pqdm(all_coupon_links, execute_single_sing, n_jobs=8)
     udemy_file_helper.write_data_to_json(list_data_objects)
     total_bar.close()
 
@@ -31,15 +31,23 @@ def execute_single_sing(coupon_url):
             f.writelines(f"{coupon_url}\n")
             return
 
+def remove_old_files():
+    try:
+        os.remove("udemy_coupon.csv")
+    except: pass
+    try:
+        os.remove("coupon_link.txt")
+    except: pass
+    try:
+        os.remove("error.log")
+    except: pass
+    try:
+        os.remove("udemy_coupon.json")
+    except: pass
+
 
 start = time.time()
-try:
-    os.remove("udemy_coupon.csv")
-    # os.remove("coupon_link.txt")
-    os.remove("udemy_coupon.json")
-    os.remove("error.log")
-except:
-    pass
+remove_old_files()
 # udemy_coupon_url_crawler.main()
 execute_all_link()
 print(f"It took {time.time()-start} second to crawl")

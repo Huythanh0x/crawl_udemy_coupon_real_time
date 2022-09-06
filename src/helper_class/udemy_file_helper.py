@@ -1,6 +1,5 @@
 import json
 
-
 def write_all_coupon_links(links_ls):
     links_ls_to_write = "\n".join(links_ls)
     with open('coupon_link.txt', 'w') as f:
@@ -13,8 +12,6 @@ def get_all_coupon_links():
 
 
 def write_data_to_json(list_data_objects):
-    list_data_objects = [json_result for json_result in list_data_objects if json_result != None]
-    list_json_result = {"results": list_data_objects}
-    udemy_coupon_json = json.dumps(list_json_result)
-    with open('udemy_coupon.json', 'w') as f:
-        f.writelines(udemy_coupon_json)
+    list_data_objects = [data_object for data_object in list_data_objects if data_object != None]
+    with open("udemy_coupon.json","w") as f: 
+        f.writelines(json.dumps({"result":list_data_objects},default=vars))

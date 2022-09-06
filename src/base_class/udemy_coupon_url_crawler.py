@@ -230,4 +230,4 @@ def main():
     tm.join()
 
 
-MAX_PAGE_LOAD = 1
+MAX_PAGE_LOAD = 6
