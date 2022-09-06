@@ -14,4 +14,4 @@ def get_all_coupon_links():
 def write_data_to_json(list_data_objects):
     list_data_objects = [data_object for data_object in list_data_objects if data_object != None]
     with open("udemy_coupon.json","w") as f: 
-        f.writelines(json.dumps({"result":list_data_objects},default=vars))
+        f.writelines(json.dumps({"results":list_data_objects},default=vars))

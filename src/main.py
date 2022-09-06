@@ -48,6 +48,6 @@ def remove_old_files():
 
 start = time.time()
 remove_old_files()
-# udemy_coupon_url_crawler.main()
+udemy_coupon_url_crawler.main()
 execute_all_link()
 print(f"It took {time.time()-start} second to crawl")
