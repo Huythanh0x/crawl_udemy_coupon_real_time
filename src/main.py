@@ -8,9 +8,8 @@ from base_class.udemy_course_data import UdemyCourseData
 from tqdm import tqdm
 from pqdm.processes import pqdm
 
-
 def execute_all_link():
-    all_coupon_links = udemy_file_helper.get_all_coupon_links()[:]
+    all_coupon_links = udemy_file_helper.get_all_coupon_links()
     total_bar = tqdm(total=len(all_coupon_links), desc="LOAD DATA TO JSON")
     list_data_objects = pqdm(all_coupon_links, execute_single_sing, n_jobs=8)
     udemy_file_helper.write_data_to_json(list_data_objects)

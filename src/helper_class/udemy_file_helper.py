@@ -1,4 +1,5 @@
 import json
+import helper_class.date_time_helper as date_time_helper 
 
 def write_all_coupon_links(links_ls):
     links_ls_to_write = "\n".join(links_ls)
@@ -14,4 +15,4 @@ def get_all_coupon_links():
 def write_data_to_json(list_data_objects):
     list_data_objects = [data_object for data_object in list_data_objects if data_object != None]
     with open("udemy_coupon.json","w") as f: 
-        f.writelines(json.dumps({"results":list_data_objects},default=vars))
+        f.writelines(json.dumps({"update_time":date_time_helper.get_update_time() ,"results":list_data_objects},default=vars))
