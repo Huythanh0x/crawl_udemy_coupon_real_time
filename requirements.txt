@@ -1,6 +1,7 @@
 bs4
-urllib
 html5lib
 tqdm
 requests
 pytz
+selenium
+pqdm
