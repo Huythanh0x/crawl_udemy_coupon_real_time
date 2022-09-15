@@ -161,8 +161,11 @@ def enext():
         executable_path="/usr/bin/chromedriver", options=op)
     driver.get("https://e-next.in/e/udemy-free-courses/")
     soup = bs(driver.page_source, "html.parser")
-    max_page_index = int(soup.find(
-        "li", {"class": "paginationjs-page paginationjs-last J-paginationjs-page"}).text)
+    try:
+        max_page_index = int(soup.find(
+            "li", {"class": "paginationjs-page paginationjs-last J-paginationjs-page"}).text)
+    except:
+        max_page_index = int(soup.find_all('li',{'class':"paginationjs-page J-paginationjs-page"})[-1].text)
     en_bar = tqdm(total=max_page_index, desc="E-next")
     for _ in range(max_page_index):
         soup = bs(driver.page_source, "html.parser")
