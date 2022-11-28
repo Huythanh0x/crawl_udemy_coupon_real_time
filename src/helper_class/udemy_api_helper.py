@@ -8,14 +8,8 @@ def get_course_id(coupon_url):
     if r.status_code in (404, 302, 301) or "/course/draft/" in r.url:
         return False
     soup = bs(r.content, "html5lib")
-    try:
-        course_id = soup.find(
-            "div",
-            attrs={"data-content-group": "Landing Page"},
-        )["data-course-id"]
-    except:
-        course_id = soup.find(
-            "body", attrs={"data-module-id": "course-landing-page/udlite"}
+    course_id = soup.find(
+            "body", attrs={"id": "udemy"}
         )["data-clp-course-id"]
     return course_id
 
