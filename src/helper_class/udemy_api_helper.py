@@ -4,13 +4,18 @@ import json
 
 
 def get_course_id(coupon_url):
-    r = requests.get(coupon_url, allow_redirects=False)
+    r = requests.get(coupon_url, allow_redirects=True)
     if r.status_code in (404, 302, 301) or "/course/draft/" in r.url:
         return False
     soup = bs(r.content, "html5lib")
-    course_id = soup.find(
-            "body", attrs={"id": "udemy"}
-        )["data-clp-course-id"]
+    try: 
+        course_id = soup.find(
+                "body", attrs={"id": "udemy"}
+            )["data-clp-course-id"]
+    except:
+        course_id = soup.find(
+                "div", attrs={"class": "sidebar-container-position-manager"}
+            ).find('img')["src"].split('_70ff.jpg')[0].split('/')[-1]
     return course_id
 
 
