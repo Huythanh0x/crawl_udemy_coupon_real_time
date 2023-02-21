@@ -11,7 +11,7 @@ from pqdm.processes import pqdm
 def execute_all_link():
     all_coupon_links = udemy_file_helper.get_all_coupon_links()
     total_bar = tqdm(total=len(all_coupon_links), desc="LOAD DATA TO JSON")
-    list_data_objects = pqdm(all_coupon_links, execute_single_sing, n_jobs=12)
+    list_data_objects = pqdm(all_coupon_links, execute_single_sing, n_jobs=4)
     udemy_file_helper.write_data_to_json(list_data_objects)
     total_bar.close()
 
@@ -38,7 +38,7 @@ def remove_old_files():
         os.remove("coupon_link.txt")
     except: pass
     try:
-        os.remove("error.log")
+        os.remove("error.log")  
     except: pass
     try:
         os.remove("udemy_coupon.json")

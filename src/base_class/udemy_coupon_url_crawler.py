@@ -222,9 +222,12 @@ def start_crawling():
         if "/?couponCode=" not in url:
             url = url.replace("?couponCode=", "/?couponCode=")
             links_ls[idx] = url
+        if "#" in url:
+            url = url.split('#')[0]
+            links_ls[idx] = url
     links_ls = set(links_ls)
     udemy_file_helper.write_all_coupon_links(links_ls)
-    print(f"length is {len(links_ls)}")
+    print(f"Length is {len(links_ls)}")
 
 
 def main():

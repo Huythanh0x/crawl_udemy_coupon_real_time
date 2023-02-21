@@ -25,7 +25,7 @@ def get_coupon_code(coupon_url):
 
 def get_coupon_status(course_id, coupon_code):
     url_check_status_coupons = f"https://www.udemy.com/api-2.0/course-landing-components/{course_id}/me/?couponCode={coupon_code}&components=deal_badge,discount_expiration,gift_this_course,price_text,purchase,recommendation,redeem_coupon,cacheable_deal_badge,cacheable_discount_expiration,cacheable_price_text,cacheable_buy_button,buy_button,buy_for_team,cacheable_purchase_text,cacheable_add_to_cart,money_back_guarantee,instructor_links,incentives_context,top_companies_notice_context,curated_for_ufb_notice_context,sidebar_container,purchase_tabs_context,subscribe_team_modal_context,lifetime_access_context,available_coupons"
-    print(url_check_status_coupons)
+    # print(url_check_status_coupons)
     r = requests.get(url_check_status_coupons, allow_redirects=False)
     if r.status_code in (404, 302, 301):
         return False
