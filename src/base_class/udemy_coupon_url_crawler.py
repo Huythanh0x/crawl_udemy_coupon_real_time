@@ -9,6 +9,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
+import traceback
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 def discudemy():
@@ -152,39 +156,9 @@ def idcoupons():
 def enext():
     global en_links
     en_links = []
-    op = webdriver.ChromeOptions()
-    op.add_argument("--start-maximized")
-    op.add_argument("--headless")
-    prefs = {"profile.managed_default_content_settings.images": 2}
-    op.add_experimental_option("prefs", prefs)
-    driver = webdriver.Chrome(
-        executable_path="/usr/bin/chromedriver", options=op)
-    driver.get("https://e-next.in/e/udemy-free-courses/")
-    soup = bs(driver.page_source, "html.parser")
-    try:
-        max_page_index = int(soup.find(
-            "li", {"class": "paginationjs-page paginationjs-last J-paginationjs-page"}).text)
-    except:
-        max_page_index = int(soup.find_all('li',{'class':"paginationjs-page J-paginationjs-page"})[-1].text)
-    en_bar = tqdm(total=max_page_index, desc="E-next")
-    for _ in range(max_page_index):
-        soup = bs(driver.page_source, "html.parser")
-        big_all = [str(tag['href']) for tag in soup.find_all(
-            "a", {"class": "btn btn-primary btn-sm"})]
-        en_bar.update(1)
-        en_links.extend(big_all)
-        action = webdriver.ActionChains(driver)
-        element = driver.find_element(By.CLASS_NAME, "paginationjs-next")
-        action.move_to_element(element)
-        html = driver.find_element(By.TAG_NAME, 'html')
-        time.sleep(0.3)
-        html.send_keys(Keys.PAGE_DOWN)
-        time.sleep(0.3)
-        action.click(element)
-        action.perform()
-    en_bar.close()
+    r = requests.get("https://jobs.e-next.in/public/assets/data/udemy.json")
+    en_links.extend([item['site'] for item in r.json()])
     return en_links
-
 
 def create_scrape_obj():
     funcs = {
