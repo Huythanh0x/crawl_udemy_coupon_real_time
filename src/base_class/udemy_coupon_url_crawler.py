@@ -157,7 +157,7 @@ def enext():
     global en_links
     en_links = []
     r = requests.get("https://jobs.e-next.in/public/assets/data/udemy.json")
-    en_links.extend([item['site'] for item in r.json()])
+    en_links.extend([item['url'] for item in r.json()])
     return en_links
 
 def create_scrape_obj():
